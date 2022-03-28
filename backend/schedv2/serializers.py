@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.schedv2.models import Course, Section, Meeting
+from schedv2.models import Course, Section, Meeting
 
 
 class CourseSerializer(serializers.ModelSerializer):
