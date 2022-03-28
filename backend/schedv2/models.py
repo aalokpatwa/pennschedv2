@@ -8,7 +8,6 @@ class Course(models.Model):
     )
 
     number = models.fields.IntegerField(
-        max_length=4,
         null=False,
         blank=False
     )
@@ -37,12 +36,12 @@ class Section(models.Model):
     )
 
     code = models.fields.IntegerField(
-        max_length=4,
         null=False,
         blank=False,
     )
 
     instructor = models.fields.CharField(
+        max_length=50,
         null=False
     )
 
