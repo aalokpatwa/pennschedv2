@@ -28,7 +28,7 @@ class Section(models.Model):
             name="code_course_unique_constraint"
         )
 
-    section = models.ForeignKey(
+    course = models.ForeignKey(
         "Course",
         null=False,
         blank=False,
@@ -59,7 +59,8 @@ class Meeting(models.Model):
 
     days = models.fields.CharField(
         max_length=7,
-        help_text="String of days MTWRF" # TODO: determine if need sat/sun
+        help_text="String of days MTWRF" # NOTE: changed to 'R' from 'H' for compatability with labs api
+        # TODO: determine if need sat/sun
     )
 
     start = models.fields.TimeField(
