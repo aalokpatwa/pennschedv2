@@ -5,7 +5,7 @@ import csv
 from schedv2.models import Course, Section, Meeting
 from os import path
 from datetime import datetime
-
+from django.db import transaction
 
 class Command(BaseCommand):
     help = """
@@ -111,13 +111,14 @@ class Command(BaseCommand):
 
         # save DB state (if not dry-run)
         if not options['dry-run']:
-            Course.objects.bulk_create(
-                courses.values()
-            )
-            Section.objects.bulk_create(
-                sections.values()
-            )
-            Meeting.objects.bulk_create(
-                meetings
-            )
+            with transaction.atomic():
+                Course.objects.bulk_create(
+                    courses.values()
+                )
+                Section.objects.bulk_create(
+                    sections.values()
+                )
+                Meeting.objects.bulk_create(
+                    meetings
+                )
 
