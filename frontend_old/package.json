@@ -1,0 +1,33 @@
+{
+  "name": "pennsched-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for PennSched",
+  "source": "src/index.html",
+  "main": "src/index.tsx",
+  "scripts": {
+    "build": "parcel build src/index.tsx",
+    "start": "npx parcel src/index.html",
+    "lint": "eslint",
+    "check": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.11.0",
+    "parcel": "^2.3.2",
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.8.2",
+    "@emotion/styled": "^11.8.1",
+    "@mui/material": "^5.5.2",
+    "@types/react": "^17.0.41",
+    "@types/react-dom": "^17.0.14",
+    "axios": "^0.26.1",
+    "react": "^17.0.2",
+    "react-beautiful-dnd": "^13.1.0",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^6.2.2"
+  }
+}
