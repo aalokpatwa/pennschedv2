@@ -19,6 +19,12 @@ class Course(models.Model):
         blank=False
     )
 
+    name = models.fields.CharField(
+        max_length=512,
+        null=False,
+        blank=False
+    )
+
 
 class Section(models.Model):
     class Meta:
