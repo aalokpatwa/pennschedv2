@@ -1,2 +1,4 @@
 /backend/pennschedv2/
 *.pyc
+backend/algo/env/
+.DS_Store
