@@ -2,6 +2,9 @@ import itertools
 from datetime import datetime as dt
 import pandas as pd
 import numpy as np
+import json
+from django.forms.models import model_to_dict
+from schedv2.models import Meeting, Section, Course
 
 def common_element(list1, list2):
     #Converts both lists to sets, which cannot have duplicates.
@@ -11,11 +14,7 @@ def common_element(list1, list2):
     return len(set1.intersection(set2)) > 0
 
 def compare_times(time1, time2):
-    #Convert both of the times into datetime objects, which filters AM/PM among other things.
-    #Return whether the first time is greater (after) the second.
-    dt1 = dt.strptime(time1, "%I:%M%p")
-    dt2 = dt.strptime(time2, "%I:%M%p")
-    return dt1 >= dt2
+    return time1 >= time2
 
 def is_overlap(slot1, slot2):
     # Find what days each of the class's time slots fall upon
@@ -68,34 +67,80 @@ def rank_morningtime(schedule):
     numMorningClasses = np.count_nonzero(startTimes=="8:30AM")
     return numMorningClasses
 
+def rank_endtime(schedule):
+    sched_array = np.asarray(schedule)
+    endTimes = sched_array[:, 1]
+    numLateClasses = np.count_nonzero(pd.to_datetime(endTimes) > pd.to_datetime("5:00PM"))
+    return numLateClasses
 
-class_times = {"biol_121": [("10:15AM", "11:45AM", "M-W-F", "101")], 
-               "cis_120": [("10:30AM", "11:30AM", "M-W-F", "101"), ("12:00PM", "1:00PM", "M-W-F", "101")],
-               "cis_160": [("8:30AM", "10:00AM", "T-R", "101"), ("10:15AM", "11:45AM", "T-R", "101")],
-               "biol_123": [("12:00PM", "3:00PM", "R", "101"), ("8:30AM", "11:30AM", "R", "102")],
-               "stat_430": [("3:30PM", "5:00PM", "T-R", "101"), ("5:15PM", "6:45PM", "T-R", "101")],
-               "writ_020": [("3:30PM", "5:00PM", "M-W", "101")],
-               "cis_120_r": [("5:15PM", "6:15PM", "W", "101")],
-               "biol_123_r": [("8:30AM", "9:30AM", "F", "101")],
-               "cis_160_r": [("3:30PM", "4:30PM", "F", "101")],
-               }
+def parseDjango(courseSet):
+    class_times = {}
+    for course in courseSet.iterator():
+        className = course.full_code
+        if (not className in class_times):
+            class_times[className] = []
+        sectionNumber = list(Section.objects.filter(course=course).values_list('code'))
+        meetingInfo = list(Meeting.objects.filter(section__course=course).values_list('start', 'end', 'days'))
+        class_times[className] = [meet + (num,) for num, meet in zip(sectionNumber, meetingInfo)]
+    return class_times
 
-class_names = find_class_names(class_times)
+def addUserSlots(inputDict, userJson):
+    inputDict.update(json.load(userJson))
+    return inputDict
 
-all = all_schedules(class_times)
+def main(courseSet, rankingScheme, inputJson):
+    """
+    Inputs: courseList: the list of Courses that the student wants to build a schedule for, rankingScheme: a string representing how they would like to rank schedules.
+    """
 
-schedules = build_schedules(all)
+    class_times = parseDjango(courseSet)
+    # addUserSlots(class_times, inputJson)
 
-num_schedules = len(schedules)
+    class_names = find_class_names(class_times)
 
-print (f"You have {num_schedules} different options for schedules.\n")
-for printed_sched in schedules:
-    numMorning = rank_morningtime(printed_sched)
-    print (f"This schedule features {numMorning} 8:30 classes.")
-    for class_slot in range(len(printed_sched)):
-        class_name = class_names[class_slot]
-        timing = f"{printed_sched[class_slot][0]}-{printed_sched[class_slot][1]}"
-        days = printed_sched[class_slot][2]
-        section = printed_sched[class_slot][3]
-        print (f"{class_name} Section {section}: {timing} on {days}")
-    print ("\n")
+    # Create all of the possible schedules given the timeslots for each course provided
+    all = all_schedules(class_times)
+
+    # Return only the schedules that do not have overlaps
+    schedules = build_schedules(all)
+    num_schedules = len(schedules)
+
+    schedules.sort(key=rankingScheme)    
+    print (f"You have {num_schedules} different options for schedules.\n")
+
+    jsonList = []
+
+    for printed_sched in schedules:
+        classesList = []
+        for class_slot in range(len(printed_sched)):
+            class_name = class_names[class_slot]
+            classDict["className"] = class_name
+
+            section = printed_sched[class_slot][3]
+            classDict["classSection"] = section
+
+            timing = f"{printed_sched[class_slot][0]}-{printed_sched[class_slot][1]}"
+            classDict["classTime"] = timing
+            
+            days = printed_sched[class_slot][2]
+            classDict["classDays"] = days
+
+            summary = f"{class_name} Section {section}: {timing} on {days}"
+            classDict["className"]
+            classDict["classSummary"] = summary
+            classesList.append(classDict)
+        jsonList.append(classesList)
+    
+    return json.dumps(jsonList)
+
+# class_times = {"biol_121": [("10:15AM", "11:45AM", "M-W-F", "101")], 
+#                "cis_120": [("10:30AM", "11:30AM", "M-W-F", "101"), ("12:00PM", "1:00PM", "M-W-F", "101")],
+#                "cis_160": [("8:30AM", "10:00AM", "T-R", "101"), ("10:15AM", "11:45AM", "T-R", "101")],
+#                "biol_123": [("12:00PM", "3:00PM", "R", "101"), ("8:30AM", "11:30AM", "R", "102")],
+#                "stat_430": [("3:30PM", "5:00PM", "T-R", "101"), ("5:15PM", "6:45PM", "T-R", "101")],
+#                "writ_020": [("3:30PM", "5:00PM", "M-W", "101")],
+#                "cis_120_r": [("5:15PM", "6:15PM", "W", "101")],
+#                "biol_123_r": [("8:30AM", "9:30AM", "F", "101")],
+#                "cis_160_r": [("3:30PM", "4:30PM", "F", "101")],
+#                }
+# print (main(class_times, rank_morningtime))

@@ -10,6 +10,11 @@ router.register(
     "schedule"
 )
 
+create_schedule = ScheduleCreatorViewSet.as_view({'post': 'create_schedule'})
+list_schedules = ScheduleCreatorViewSet.as_view({'get': 'list'})
+
 urlpatterns = [
-    path('', include(router.urls)),
+    path("schedules/create", create_schedule, name="create schedules"),
+    path("schedules/list", list_schedules, name="list schedules"),
+    # path('', include(router.urls)),
 ]
