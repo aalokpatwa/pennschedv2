@@ -117,5 +117,8 @@ class Command(BaseCommand):
                     del recitation_links[full_section_code]
                     del lab_links[full_section_code]
             if len(lab_links) > 0 or len(recitation_links) > 0:
-                raise ValueError("Some recitation/lab links could not be added because the"
-                                 "recitation/lab section was never created")
+                # raise ValueError("Some recitation/lab links could not be added because the"
+                #                 "recitation/lab section was never created")
+                # TODO: FIXME!!!
+                print("Some recitation/lab links could not be added because the recitation/lab section was never created")
+                print(lab_links.keys(), recitation_links.keys())
