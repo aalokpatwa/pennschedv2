@@ -3,7 +3,6 @@ from datetime import datetime as dt
 import pandas as pd
 import numpy as np
 import json
-from django.forms.models import model_to_dict
 from schedv2.models import Meeting, Section, Course
 
 def common_element(list1, list2):
@@ -113,6 +112,7 @@ def main(courseSet, rankingScheme, inputJson):
     for printed_sched in schedules:
         classesList = []
         for class_slot in range(len(printed_sched)):
+            classDict = {}
             class_name = class_names[class_slot]
             classDict["className"] = class_name
 
@@ -126,7 +126,6 @@ def main(courseSet, rankingScheme, inputJson):
             classDict["classDays"] = days
 
             summary = f"{class_name} Section {section}: {timing} on {days}"
-            classDict["className"]
             classDict["classSummary"] = summary
             classesList.append(classDict)
         jsonList.append(classesList)
