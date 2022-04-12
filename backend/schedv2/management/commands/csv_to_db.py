@@ -120,5 +120,5 @@ class Command(BaseCommand):
                 # raise ValueError("Some recitation/lab links could not be added because the"
                 #                 "recitation/lab section was never created")
                 # TODO: FIXME!!!
-                print("Some recitation/lab links could not be added because the recitation/lab section was never created")
+                print("Some recitation/lab links could not be added because the recitation/lab section was never created:")
                 print(lab_links.keys(), recitation_links.keys())
