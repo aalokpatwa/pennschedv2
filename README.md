@@ -1,5 +1,14 @@
 # pennschedv2
 
+# Problem
+
+Course planning is a well-known struggle for Penn students. Deciding what courses to take is the easy part; actually selecting the correct time slots such that all your desired courses fit together is where it gets tough. Every student wants to avoid 8:30 classes, leave time for lunch, and reserve a time slot for their club meetings.  
+
+Existing methods like Penn CoursePlan are excellent for visualizing your course schedule, but don't actually help put it together.  
+That's where PennSched comes in: simply select your list of desired courses and the algorithm will show you all of the possible schedules that work, ranked according to latest start time, earliest end time, or whatever metric you personally care about.
+
+Our goal is to cut the time that each Penn student spends putting together their schedule by 10x. Try it out for yourself!
+
 ## Basic Setup
 
 ### If in production:
